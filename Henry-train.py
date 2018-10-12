@@ -29,17 +29,13 @@ import os
 sourceDir = "cropped_set"
 annotationDir = "wider_attribute_annotation"
 imageDir = "Image"
-#trainJson = "train_5730.json"
-#testJson = "test_7282.json"
-#valJson = "val_1335.json"
-trainJson = "train_268.json"
-testJson = "test_363.json"
-valJson = "val_74.json"
+trainJson = "train_5279.json"
+testJson = "test_6733.json"
+valJson = "val_1269.json"
 
-shuffle_buffer_size = 1000
+shuffle_buffer_size = 25000
 batch_size = 64
 prefetch_buffer_size = 64
-epochs = 100
 tf.logging.set_verbosity(tf.logging.INFO)
 
 def parse_fn(filename, label):
@@ -55,11 +51,10 @@ def train_input_fn():
 	filenames = [sourceDir + "/" + imageDir + "/" + annotationDict[str(i)]["filename"] for i in range(len(annotationDict))]
 	labels = [[(annotationDict[str(i)]["attribute"][0] + 1) / 2] for i in range(len(annotationDict))]
 	dataset = tf.data.Dataset.from_tensor_slices((filenames, labels))
-	dataset = dataset.apply(tf.contrib.data.shuffle_and_repeat(
-		buffer_size=shuffle_buffer_size, count=epochs))
+	dataset = dataset.shuffle(buffer_size=shuffle_buffer_size)
 	dataset = dataset.apply(tf.contrib.data.map_and_batch(
 		map_func=parse_fn, batch_size=batch_size))
-	dataset = dataset.prefetch(buffer_size=prefetch_buffer_size)
+#	dataset = dataset.prefetch(buffer_size=prefetch_buffer_size)
 	return dataset
 
 def val_input_fn():
@@ -68,11 +63,10 @@ def val_input_fn():
 	filenames = [sourceDir + "/" + imageDir + "/" + annotationDict[str(i)]["filename"] for i in range(len(annotationDict))]
 	labels = [[(annotationDict[str(i)]["attribute"][0] + 1) / 2] for i in range(len(annotationDict))]
 	dataset = tf.data.Dataset.from_tensor_slices((filenames, labels))
-	dataset = dataset.apply(tf.contrib.data.shuffle_and_repeat(
-		buffer_size=shuffle_buffer_size, count=1))
+	dataset = dataset.shuffle(buffer_size=shuffle_buffer_size)
 	dataset = dataset.apply(tf.contrib.data.map_and_batch(
 		map_func=parse_fn, batch_size=batch_size))
-	dataset = dataset.prefetch(buffer_size=prefetch_buffer_size)
+#	dataset = dataset.prefetch(buffer_size=prefetch_buffer_size)
 	return dataset
 
 def test_input_fn():
@@ -81,11 +75,10 @@ def test_input_fn():
 	filenames = [sourceDir + "/" + imageDir + "/" + annotationDict[str(i)]["filename"] for i in range(len(annotationDict))]
 	labels = [[(annotationDict[str(i)]["attribute"][0] + 1) / 2] for i in range(len(annotationDict))]
 	dataset = tf.data.Dataset.from_tensor_slices((filenames, labels))
-	dataset = dataset.apply(tf.contrib.data.shuffle_and_repeat(
-		buffer_size=shuffle_buffer_size, count=1))
+	dataset = dataset.shuffle(buffer_size=shuffle_buffer_size)
 	dataset = dataset.apply(tf.contrib.data.map_and_batch(
 		map_func=parse_fn, batch_size=batch_size))
-	dataset = dataset.prefetch(buffer_size=prefetch_buffer_size)
+#	dataset = dataset.prefetch(buffer_size=prefetch_buffer_size)
 	return dataset
 
 def cnn_model_fn(features, labels, mode):
@@ -201,7 +194,7 @@ def cnn_model_fn(features, labels, mode):
 	# Configure the Training Op (for TRAIN mode)
 	if mode == tf.estimator.ModeKeys.TRAIN:
 		#optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)
-		optimizer = tf.train.AdamOptimizer(learning_rate=0.00001)
+		optimizer = tf.train.AdamOptimizer(learning_rate=0.001)
 		train_op = optimizer.minimize(
 			loss=loss,
 			global_step=tf.train.get_global_step())
