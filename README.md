@@ -31,7 +31,7 @@ For more, see http://mmlab.ie.cuhk.edu.hk/projects/WIDERAttribute.html
 
 - Sometimes, it can be quite troublesome to install tensorflow on your machine. If so, you can use Docker to release the pain.
 - Pull the Docker image by `docker pull tensorflow/tensorflow:latest-py3`
-- Let's first create a container by `docker run -it --name tf --rm -v $PWD:/CS3244 tensorflow/tensorflow:latest-py3 bash`.
+- Let's first create a container by `docker run -it --name tensorflow --rm -v $PWD:/CS3244 tensorflow/tensorflow:latest-py3 bash`.
 	- `it` is always used for interactive command, like a shell.
 	- `rm` will delete the container automatically after exit.
 	- `v` and `w` specifies how the directory sharing is done.
