@@ -39,7 +39,7 @@ def correctBboxValues(imageTensor, bbox):
     targetWidth  = int(bbox[2])
     return [offsetHeight, offsetWidth, targetHeight, targetWidth]
 
-def extractPersonFromImage(imageData):
+def extractPersonFromImage(prefix, imageData):
     imagePath = os.path.join(dataDir, imageData["file_name"])
     imageTensor = readImageToTensor(imagePath)
     session.run(imageTensor)
@@ -53,7 +53,7 @@ def extractPersonFromImage(imageData):
             encodedTensor = tf.image.encode_jpeg(croppedTensor)
 
             basename = os.path.splitext(os.path.basename(imageData["file_name"]))[0]
-            outputPath = os.path.join(dataExtractDir, basename + "_" + str(i) + ".jpg")
+            outputPath = os.path.join(dataExtractDir, prefix, basename + "_" + str(i) + ".jpg")
             newImage = tf.write_file(tf.constant(outputPath), encodedTensor)
             session.run(newImage)
         except:
@@ -67,15 +67,23 @@ def extractPersonFromImage(imageData):
     imageCount[0] += (i + 1)
     print("Cropped %d images up to now." % (imageCount[0]))
 
+def extractPersons(prefix, images):
+    for image in images:
+        if(image["file_name"].startswith(prefix)):
+            extractPersonFromImage(prefix, image)
+
+# Crop train and val
 currentFileName = os.path.join(labelDir, labelTrainFileName)
 data = loadJson(currentFileName)
 images = data['images']
-attributeIdMap = data['attribute_id_map']
-sceneIdMap = data['scene_id_map']
+extractPersons("train/", images)
+extractPersons("val/", images)
 
-for image in images:
-    if (image["file_name"].startswith("val/3--Riot/")):
-        extractPersonFromImage(image)
+# Crop test
+currentFileName = os.path.join(labelDir, labelTestFileName)
+data = loadJson(currentFileName)
+images = data['images']
+extractPersons("test", images)
 
 # Close the session after use.
 session.close()
