@@ -124,6 +124,8 @@ def createDataset(prefix, images):
 
 			basename = os.path.splitext(os.path.basename(image["file_name"]))[0]
 			targetPath = os.path.join(dataExtractDir, prefix, basename + "_" + str(i) + ".jpg")
+			if (not os.path.isfile(targetPath)):
+				continue
 
 			files.append(readAndResizeImageToTensor(targetPath))
 			labels.append(int((gender + 1) / 2))
