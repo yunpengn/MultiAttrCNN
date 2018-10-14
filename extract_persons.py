@@ -32,10 +32,10 @@ def readImageToTensor(imagePath):
     return tf.image.decode_jpeg(file, channels=3)
 
 def correctBboxValues(imageTensor, bbox):
-    offsetHeight = int(bbox[0])
-    offsetWidth  = int(bbox[1])
-    targetHeight = int(bbox[2])
-    targetWidth  = int(bbox[3])
+    offsetHeight = int(bbox[1])
+    offsetWidth  = int(bbox[0])
+    targetHeight = int(bbox[3])
+    targetWidth  = int(bbox[2])
     return [offsetHeight, offsetWidth, targetHeight, targetWidth]
 
 def extractPersonFromImage(imageData):
@@ -52,16 +52,20 @@ def extractPersonFromImage(imageData):
         encodedTensor = tf.image.encode_jpeg(croppedTensor)
 
         outputPath = os.path.join(dataExtractDir, imageData["file_name"], str(i) + ".jpg")
-        print("Saving cropped image to", outputPath)
         newImage = tf.write_file(tf.constant(outputPath), encodedTensor)
         session.run(newImage)
         i = i + 1
+
+    print("Extract %d person(s) from the image at %s." % (i + 1, imageData["file_name"]))
 
 currentFileName = os.path.join(labelDir, labelTrainFileName)
 data = loadJson(currentFileName)
 images = data['images']
 attributeIdMap = data['attribute_id_map']
 sceneIdMap = data['scene_id_map']
-extractPersonFromImage(images[0])
 
+for image in images:
+    extractPersonFromImage(image)
+
+# Close the session after use.
 session.close()
