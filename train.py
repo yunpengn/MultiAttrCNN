@@ -161,15 +161,21 @@ def main(argv):
 	    model_fn=cnn_model_fn,
 	    model_dir="model")
 
-	# Train the model (can increase the number of steps to improve accuracy)
-	gender_classifier.train(
-	    input_fn=train_input_fn,
-	    steps=500,
-	    hooks=[logging_hook])
+	train_spec = tf.estimator.TrainSpec(
+		input_fn=train_input_fn,
+		hooks=[logging_hook],
+		max_steps=1000
+	)
 
-	gender_classifier.evaluate(
+	val_spec = tf.estimator.EvalSpec(
 		input_fn=val_input_fn,
-	    hooks=[logging_hook])
+		hooks=[logging_hook],
+		throttle_secs=15,
+		start_delay_secs=15
+	)
+
+	# Train the model (can increase the number of steps to improve accuracy)
+	gender_classifier.train(gender_classifier, train_spec, val_spec)
 
 	# Evaluate the model and print results
 	eval_results = gender_classifier.evaluate(input_fn=test_input_fn)
