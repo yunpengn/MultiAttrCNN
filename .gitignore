@@ -3,6 +3,9 @@ data/
 extract/
 label/
 
+# Model Storage folder
+model/
+
 # IDE-specific folder
 .idea/
 

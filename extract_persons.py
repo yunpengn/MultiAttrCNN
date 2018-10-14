@@ -49,7 +49,6 @@ def extractPersonFromImage(imageData):
 
     i = 0
     for target in imageData["targets"]:
-        attributes = target["attribute"]
         bbox = correctBboxValues(imageTensor, target["bbox"])
 
         try:
@@ -78,7 +77,7 @@ attributeIdMap = data['attribute_id_map']
 sceneIdMap = data['scene_id_map']
 
 for image in images:
-    if (image["file_name"].startswith("val/0--Parade/")):
+    if (image["file_name"].startswith("val/3--Riot/")):
         extractPersonFromImage(image)
 
 # Close the session after use.
