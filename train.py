@@ -18,14 +18,15 @@ from six.moves import urllib
 # Sets the logging level for TensorFlow library.
 tf.logging.set_verbosity(tf.logging.INFO)
 
+RESIZE_HEIGHT = 28
+RESIZE_WIDTH = 28
+
 # Model function for CNN.
 def cnn_model_fn(features, labels, mode):
-	print(features.shape)
-	print(labels.shape)
 	labels = tf.reshape(labels, [1, 1])
 
 	# Input Layer
-	input_layer = tf.reshape(features, [-1, 28, 28, 1])
+	input_layer = tf.reshape(features, [-1, RESIZE_HEIGHT, RESIZE_WIDTH, 1])
 
 	# Convolutional Layer #1
 	conv1 = tf.layers.conv2d(
@@ -105,14 +106,14 @@ def loadJson(path):
 def readAndResizeImageToTensor(imagePath):
     file = tf.read_file(imagePath)
     decoded = tf.image.decode_jpeg(file, channels=1)
-    return tf.image.resize_images(decoded, [28, 28])
+    return tf.image.resize_images(decoded, [RESIZE_HEIGHT, RESIZE_WIDTH])
 
-def createDataset(category, images):
+def createDataset(prefix, images):
 	files = []
 	labels = []
 
 	for image in images:
-		if (not image["file_name"].startswith(category)):
+		if (not image["file_name"].startswith(prefix)):
 			continue
 
 		i = 0
@@ -122,7 +123,7 @@ def createDataset(category, images):
 				continue
 
 			basename = os.path.splitext(os.path.basename(image["file_name"]))[0]
-			targetPath = os.path.join(dataExtractDir, basename + "_" + str(i) + ".jpg")
+			targetPath = os.path.join(dataExtractDir, prefix, basename + "_" + str(i) + ".jpg")
 
 			files.append(readAndResizeImageToTensor(targetPath))
 			labels.append(int((gender + 1) / 2))
@@ -154,7 +155,7 @@ def main(argv):
 	# Create the Estimator
 	gender_classifier = tf.estimator.Estimator(
 	    model_fn=cnn_model_fn,
-	    model_dir="model/Parade_model2")
+	    model_dir="model")
 
 	# Train the model (can increase the number of steps to improve accuracy)
 	gender_classifier.train(

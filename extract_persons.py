@@ -1,12 +1,9 @@
 import json
 import numpy as np
 import os
-import pandas as panda
 import sys
 import tensorflow as tf
 import traceback
-
-from PIL import Image
 
 dataDir = "data"
 dataExtractDir = "extract"
