@@ -2,7 +2,9 @@ import json
 import numpy as np
 import os
 import pandas as panda
+import sys
 import tensorflow as tf
+import traceback
 
 from PIL import Image
 
@@ -17,6 +19,8 @@ session = tf.Session()
 
 # Sets the logging level for TensorFlow library.
 tf.logging.set_verbosity(tf.logging.INFO)
+
+imageCount = [0]
 
 # Loads the JSON files for labels.
 def loadJson(path):
@@ -48,15 +52,22 @@ def extractPersonFromImage(imageData):
         attributes = target["attribute"]
         bbox = correctBboxValues(imageTensor, target["bbox"])
 
-        croppedTensor = tf.image.crop_to_bounding_box(imageTensor, bbox[0], bbox[1], bbox[2], bbox[3])
-        encodedTensor = tf.image.encode_jpeg(croppedTensor)
+        try:
+            croppedTensor = tf.image.crop_to_bounding_box(imageTensor, bbox[0], bbox[1], bbox[2], bbox[3])
+            encodedTensor = tf.image.encode_jpeg(croppedTensor)
+            outputPath = os.path.join(dataExtractDir, imageData["file_name"], str(i) + ".jpg")
+            newImage = tf.write_file(tf.constant(outputPath), encodedTensor)
+            session.run(newImage)
+        except:
+            print("Unable to extract person around bbox %s from the image at %s." % (bbox, imageData["file_name"]))
+            _, _, tb = sys.exc_info()
+            traceback.print_tb(tb)
 
-        outputPath = os.path.join(dataExtractDir, imageData["file_name"], str(i) + ".jpg")
-        newImage = tf.write_file(tf.constant(outputPath), encodedTensor)
-        session.run(newImage)
         i = i + 1
 
     print("Extract %d person(s) from the image at %s." % (i + 1, imageData["file_name"]))
+    imageCount[0] += (i + 1)
+    print("Cropped %d images up to now." % (imageCount[0]))
 
 currentFileName = os.path.join(labelDir, labelTrainFileName)
 data = loadJson(currentFileName)
@@ -65,7 +76,8 @@ attributeIdMap = data['attribute_id_map']
 sceneIdMap = data['scene_id_map']
 
 for image in images:
-    extractPersonFromImage(image)
+    if (image["file_name"].startswith("val/0--Parade/")):
+        extractPersonFromImage(image)
 
 # Close the session after use.
 session.close()
