@@ -138,17 +138,19 @@ def main(argv):
 	currentFileName = os.path.join(labelDir, labelTrainFileName)
 	data = loadJson(currentFileName)
 	images = data['images']
-	attributeIdMap = data['attribute_id_map']
-	sceneIdMap = data['scene_id_map']
 
 	def train_input_fn():
-		return createDataset("val/0--Parade/", images)
+		return createDataset("train/", images)
 
 	def val_input_fn():
-		return createDataset("val/1--Handshaking/", images)
+		return createDataset("val/", images)
+
+	currentFileName2 = os.path.join(labelDir, labelTrainFileName)
+	data2 = loadJson(currentFileName2)
+	images2 = data2['images']
 
 	def test_input_fn():
-		return createDataset("val/3--Riot/", images)
+		return createDataset("test/", images2)
 
 	# Set up logging for predictions
 	tensors_to_log = {"probabilities": "sigmoid_tensor"}
