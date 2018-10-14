@@ -1,6 +1,10 @@
 # Dataset folder
 data/
+extract/
 label/
+
+# IDE-specific folder
+.idea/
 
 # OS-specific file
 .DS_Store
