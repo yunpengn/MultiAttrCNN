@@ -55,7 +55,9 @@ def extractPersonFromImage(imageData):
         try:
             croppedTensor = tf.image.crop_to_bounding_box(imageTensor, bbox[0], bbox[1], bbox[2], bbox[3])
             encodedTensor = tf.image.encode_jpeg(croppedTensor)
-            outputPath = os.path.join(dataExtractDir, imageData["file_name"], str(i) + ".jpg")
+
+            basename = os.path.splitext(os.path.basename(imageData["file_name"]))[0]
+            outputPath = os.path.join(dataExtractDir, basename + "_" + str(i) + ".jpg")
             newImage = tf.write_file(tf.constant(outputPath), encodedTensor)
             session.run(newImage)
         except:
@@ -63,7 +65,7 @@ def extractPersonFromImage(imageData):
             _, _, tb = sys.exc_info()
             traceback.print_tb(tb)
 
-        i = i + 1
+        i += 1
 
     print("Extract %d person(s) from the image at %s." % (i + 1, imageData["file_name"]))
     imageCount[0] += (i + 1)
