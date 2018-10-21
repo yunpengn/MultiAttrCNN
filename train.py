@@ -130,7 +130,10 @@ def createDataset(prefix, images):
 
 			files.append(readAndResizeImageToTensor(targetPath))
 			labels.append(int((gender + 1) / 2))
+
 			i += 1
+			if (i % 100 == 0):
+				print("Had read %d images and %d labels." % (i, i))
 
 	print("Created a train dataset with %d images and %d labels." % (len(files), len(labels)))
 	return tf.data.Dataset.from_tensor_slices((files, labels))
