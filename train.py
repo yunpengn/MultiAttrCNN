@@ -125,6 +125,7 @@ def createDataset(prefix, images):
 			basename = os.path.splitext(os.path.basename(image["file_name"]))[0]
 			targetPath = os.path.join(dataExtractDir, prefix, basename + "_" + str(i) + ".jpg")
 			if (not os.path.isfile(targetPath)):
+				print("WARNING: the file at %s does not exist." % targetPath)
 				continue
 
 			files.append(readAndResizeImageToTensor(targetPath))
@@ -175,7 +176,7 @@ def main(argv):
 	)
 
 	# Train the model (can increase the number of steps to improve accuracy)
-	gender_classifier.train(gender_classifier, train_spec, val_spec)
+	tf.estimator.train_and_evaluate(gender_classifier, train_spec, val_spec)
 
 	# Evaluate the model and print results
 	eval_results = gender_classifier.evaluate(input_fn=test_input_fn)
