@@ -18,9 +18,9 @@ from six.moves import urllib
 # Sets the logging level for TensorFlow library.
 tf.logging.set_verbosity(tf.logging.INFO)
 
-RESIZE_HEIGHT = 128
-RESIZE_WIDTH = 128
-CHANNEL = 1
+RESIZE_HEIGHT = 224
+RESIZE_WIDTH = 224
+CHANNEL = 3
 
 LOGGING_NAME = "sigmoid_tensor"
 
@@ -28,58 +28,76 @@ LOGGING_NAME = "sigmoid_tensor"
 def cnn_model_fn(features, labels, mode):
 	labels = tf.reshape(labels, [1, 1])
 
-	# Input Layer
-	# Re-shapes the input to [batch_size = -1, width, height, channel]
+	# Defines the topology of the network here.
 	input_layer = tf.reshape(features, [-1, RESIZE_HEIGHT, RESIZE_WIDTH, CHANNEL])
 	print("The input layer size is %s" % input_layer.shape)
 
-	# Convolutional Layer #1
-	# Uses a kernel of size 5*5 to extract 32 features (the dimension of the output space).
-	# Uses ReLU as the activation function.
-	# [RESIZE_HEIGHT, RESIZE_WIDTH, CHANNEL] => [RESIZE_HEIGHT, RESIZE_WIDTH, 32]
 	conv1 = tf.layers.conv2d(
 		inputs=input_layer,
-		filters=32,
-		kernel_size=[5, 5],
+		filters=64,
+		kernel_size=[3, 3],
 		padding="same",
 		activation=tf.nn.relu)
 	print("The conv1 layer size is %s" % conv1.shape)
 
-	# Pooling Layer #1
-	# Uses a max-pooling layer with pool size 2*2.
-	# [RESIZE_HEIGHT, RESIZE_WIDTH, 32] => [RESIZE_HEIGHT / 2, RESIZE_WIDTH / 2, 32]
-	pool1 = tf.layers.max_pooling2d(
-		inputs=conv1,
-		pool_size=[2, 2],
-		strides=2)
-	print("The pool1 layer size is %s" % pool1.shape)
-
-	# Convolutional Layer #2
-	# Uses a kernel of size 5*5 to extract 32 features (the dimension of the output space).
-	# Uses ReLU as the activation function.
-	# [RESIZE_HEIGHT / 2, RESIZE_WIDTH / 2, 32] => [RESIZE_HEIGHT / 2, RESIZE_WIDTH / 2, 32]
 	conv2 = tf.layers.conv2d(
-		inputs=pool1,
-		filters=32,
-		kernel_size=[5, 5],
+		inputs=conv1,
+		filters=64,
+		kernel_size=[3, 3],
 		padding="same",
 		activation=tf.nn.relu)
 	print("The conv2 layer size is %s" % conv2.shape)
 
-	# Pooling Layer #2
-	# [RESIZE_HEIGHT / 2, RESIZE_WIDTH / 2, 32] => [RESIZE_HEIGHT / 4, RESIZE_WIDTH / 4, 32]
-	pool2 = tf.layers.max_pooling2d(
+	conv3 = tf.layers.conv2d(
 		inputs=conv2,
+		filters=64,
+		kernel_size=[3, 3],
+		padding="same",
+		activation=tf.nn.relu)
+	print("The conv3 layer size is %s" % conv3.shape)
+
+	pool1 = tf.layers.max_pooling2d(
+		inputs=conv3,
 		pool_size=[2, 2],
+		strides=2)
+	print("The pool1 layer size is %s" % pool1.shape)
+
+	conv4 = tf.layers.conv2d(
+		inputs=pool1,
+		filters=64,
+		kernel_size=[5, 5],
+		strides=(2, 2),
+		padding="valid",
+		activation=tf.nn.relu)
+	print("The conv4 layer size is %s" % conv4.shape)
+
+	pool2 = tf.layers.max_pooling2d(
+		inputs=conv4,
+		pool_size=[3, 3],
 		strides=2)
 	print("The pool2 layer size is %s" % pool2.shape)
 
+	conv5 = tf.layers.conv2d(
+		inputs=pool2,
+		filters=64,
+		kernel_size=[3, 3],
+		strides=(2, 2),
+		padding="valid",
+		activation=tf.nn.relu)
+	print("The conv5 layer size is %s" % conv5.shape)
+
+	pool3 = tf.layers.max_pooling2d(
+		inputs=conv5,
+		pool_size=[3, 3],
+		strides=2)
+	print("The pool3 layer size is %s" % pool3.shape)
+
 	# Flats the tensor into a batch of vectors
-	pool2_flat = tf.reshape(pool2, [-1, int(RESIZE_HEIGHT / 4) * int(RESIZE_HEIGHT / 4) * 32])
-	print("The flatten pool2 size is %s" % pool2_flat.shape)
+	flat = tf.reshape(pool3, [-1, 5 * 5 * 64])
+	print("The flatten pool2 size is %s" % flat.shape)
 
 	# Dense (fully connected) Layer #1
-	dense = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
+	dense = tf.layers.dense(inputs=flat, units=1024, activation=tf.nn.relu)
 
 	# Performs dropout operation here as a regularization technique.
 	dropout = tf.layers.dropout(inputs=dense, rate=0.4, training=(mode == tf.estimator.ModeKeys.TRAIN))
@@ -129,7 +147,7 @@ def readAndResizeImageToTensor(imagePath):
     decoded = tf.image.decode_jpeg(file, channels=CHANNEL)
     return tf.image.resize_images(decoded, [RESIZE_HEIGHT, RESIZE_WIDTH])
 
-def createDataset(prefix, images, size_limit=1000):
+def createDataset(prefix, images, size_limit=100):
 	files = []
 	labels = []
 
