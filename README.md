@@ -35,7 +35,7 @@ For more, see http://mmlab.ie.cuhk.edu.hk/projects/WIDERAttribute.html
 	- `it` is always used for interactive command, like a shell.
 	- `rm` will delete the container automatically after exit.
 	- `v` and `w` specifies how the directory sharing is done.
-	- `p` will do port forwarding (for tensorboard later). Use `tensorboard --logdir ./ --host 0.0.0.0` to run tensorboard.
+	- `p` will do port forwarding (for tensorboard later). Use `tensorboard --logdir ./ --host 0.0.0.0` to run tensorboard. Then you can see the board at [http://localhost:7007](http://localhost:7007).
 - From then on, you can start the container by `docker start tensorflow`. Then, you can login by `docker exec -it tensorflow bash`. To stop the container, run `docker stop tensorflow`.
 
 ## Licence

@@ -104,9 +104,7 @@ def cnn_model_fn(features, labels, mode):
 	# Configures the Training operation (for TRAIN mode)
 	if mode == tf.estimator.ModeKeys.TRAIN:
 		optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)
-		train_op = optimizer.minimize(
-			loss=loss,
-			global_step=tf.train.get_global_step())
+		train_op = optimizer.minimize(loss=loss, global_step=tf.train.get_global_step())
 		return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
 
 	# Add evaluation metrics (for EVAL mode)
@@ -114,8 +112,7 @@ def cnn_model_fn(features, labels, mode):
 													   predictions=tf.round(predictions["probabilities"]))}
 
 	# Returns the evaluation estimator (for EVAL mode)
-	return tf.estimator.EstimatorSpec(
-		mode=mode, loss=loss, eval_metric_ops=eval_metric_ops)
+	return tf.estimator.EstimatorSpec(mode=mode, loss=loss, eval_metric_ops=eval_metric_ops)
 
 dataExtractDir = "extract"
 labelDir = "label"
@@ -132,7 +129,7 @@ def readAndResizeImageToTensor(imagePath):
     decoded = tf.image.decode_jpeg(file, channels=CHANNEL)
     return tf.image.resize_images(decoded, [RESIZE_HEIGHT, RESIZE_WIDTH])
 
-def createDataset(prefix, images, size_limit=100):
+def createDataset(prefix, images, size_limit=1000):
 	files = []
 	labels = []
 
@@ -168,7 +165,7 @@ def createDataset(prefix, images, size_limit=100):
 		if (total > size_limit):
 				break
 
-	print("Created a train dataset with %d images and %d labels." % (len(files), len(labels)))
+	print("Created a %s dataset with %d images and %d labels." % (prefix, len(files), len(labels)))
 	return tf.data.Dataset.from_tensor_slices((files, labels))
 
 def main(argv):
@@ -182,7 +179,7 @@ def main(argv):
 	def val_input_fn():
 		return createDataset("val/", images)
 
-	currentFileName2 = os.path.join(labelDir, labelTrainFileName)
+	currentFileName2 = os.path.join(labelDir, labelTestFileName)
 	data2 = loadJson(currentFileName2)
 	images2 = data2['images']
 
@@ -201,7 +198,7 @@ def main(argv):
 	train_spec = tf.estimator.TrainSpec(
 		input_fn=train_input_fn,
 		hooks=[logging_hook],
-		max_steps=1000
+		max_steps=2000
 	)
 
 	val_spec = tf.estimator.EvalSpec(
