@@ -64,7 +64,7 @@ def cnn_model_fn(features, labels, mode):
 
 	conv4 = tf.layers.conv2d(
 		inputs=pool1,
-		filters=64,
+		filters=128,
 		kernel_size=[5, 5],
 		strides=(2, 2),
 		padding="valid",
@@ -79,10 +79,10 @@ def cnn_model_fn(features, labels, mode):
 
 	conv5 = tf.layers.conv2d(
 		inputs=pool2,
-		filters=64,
+		filters=128,
 		kernel_size=[3, 3],
 		strides=(2, 2),
-		padding="valid",
+		padding="same",
 		activation=tf.nn.relu)
 	print("The conv5 layer size is %s" % conv5.shape)
 
@@ -92,9 +92,31 @@ def cnn_model_fn(features, labels, mode):
 		strides=2)
 	print("The pool3 layer size is %s" % pool3.shape)
 
+	conv6 = tf.layers.conv2d(
+		inputs=pool3,
+		filters=64,
+		kernel_size=[1, 1],
+		padding="same",
+		activation=tf.nn.relu)
+	print("The conv6 layer size is %s" % conv6.shape)
+
+	conv7 = tf.layers.conv2d(
+		inputs=conv6,
+		filters=32,
+		kernel_size=[1, 1],
+		padding="same",
+		activation=tf.nn.relu)
+	print("The conv7 layer size is %s" % conv7.shape)
+
+	pool4 = tf.layers.average_pooling2d(
+		inputs=conv7,
+		pool_size=[6, 6],
+		strides=1)
+	print("The pool4 layer size is %s" % pool4.shape)
+
 	# Flats the tensor into a batch of vectors
-	flat = tf.reshape(pool3, [-1, 5 * 5 * 64])
-	print("The flatten pool2 size is %s" % flat.shape)
+	flat = tf.reshape(pool4, [-1, 1 * 1 * 32])
+	print("The flatten pool4 size is %s" % flat.shape)
 
 	# Dense (fully connected) Layer #1
 	dense = tf.layers.dense(inputs=flat, units=1024, activation=tf.nn.relu)
