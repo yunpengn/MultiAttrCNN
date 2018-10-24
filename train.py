@@ -26,9 +26,12 @@ def cnn_model_fn(features, labels, mode):
 	labels = tf.reshape(labels, [1, 1])
 
 	# Input Layer
+	# Re-shapes the input to [batch_size = -1, width, height, channels = 1]
 	input_layer = tf.reshape(features, [-1, RESIZE_HEIGHT, RESIZE_WIDTH, 1])
 
 	# Convolutional Layer #1
+	# Uses a kernel of size 5*5 to extract 32 features.
+	# Uses ReLU as the activation function.
 	conv1 = tf.layers.conv2d(
 		inputs=input_layer,
 		filters=32,
@@ -37,6 +40,7 @@ def cnn_model_fn(features, labels, mode):
 		activation=tf.nn.relu)
 
 	# Pooling Layer #1
+	# Uses a max-pooling layer with pool size 2*2.
 	pool1 = tf.layers.max_pooling2d(
 		inputs=conv1,
 		pool_size=[2, 2],
@@ -108,32 +112,41 @@ def readAndResizeImageToTensor(imagePath):
     decoded = tf.image.decode_jpeg(file, channels=1)
     return tf.image.resize_images(decoded, [RESIZE_HEIGHT, RESIZE_WIDTH])
 
-def createDataset(prefix, images):
+def createDataset(prefix, images, size_limit=1000):
 	files = []
 	labels = []
 
+	# Counts the number of targets read in total.
+	total = 0
 	for image in images:
+		# Skips those images which don't have the required prefix.
 		if (not image["file_name"].startswith(prefix)):
 			continue
 
-		i = 0
+		# Counts the number of targets in the current image.
+		current_count = 0
 		for target in image["targets"]:
 			gender = int(target["attribute"][0])
 			if (gender == 0):
 				continue
 
+			# Computes the file name of the current target.
 			basename = os.path.splitext(os.path.basename(image["file_name"]))[0]
-			targetPath = os.path.join(dataExtractDir, prefix, basename + "_" + str(i) + ".jpg")
+			targetPath = os.path.join(dataExtractDir, prefix, basename + "_" + str(current_count) + ".jpg")
 			if (not os.path.isfile(targetPath)):
-				print("WARNING: the file at %s does not exist." % targetPath)
+				print("WARNING: the target at %s does not exist." % targetPath)
 				continue
 
 			files.append(readAndResizeImageToTensor(targetPath))
 			labels.append(int((gender + 1) / 2))
+			current_count += 1
+			total += 1
 
-			i += 1
-			if (i % 100 == 0):
-				print("Had read %d images and %d labels." % (i, i))
+			if (total % 100 == 0):
+				print("Had read %d targets and %d labels." % (total, total))
+
+		if (total > size_limit):
+				break
 
 	print("Created a train dataset with %d images and %d labels." % (len(files), len(labels)))
 	return tf.data.Dataset.from_tensor_slices((files, labels))
@@ -158,7 +171,7 @@ def main(argv):
 
 	# Set up logging for predictions
 	tensors_to_log = {"probabilities": "sigmoid_tensor"}
-	logging_hook = tf.train.LoggingTensorHook(tensors=tensors_to_log, every_n_iter=200)
+	logging_hook = tf.train.LoggingTensorHook(tensors=tensors_to_log, every_n_iter=100)
 
 	# Create the Estimator
 	gender_classifier = tf.estimator.Estimator(
