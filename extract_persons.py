@@ -5,9 +5,9 @@ import sys
 import tensorflow as tf
 import traceback
 
-dataDir = "data"
-dataExtractDir = "extract"
-labelDir = "label"
+dataDir = "WIDER_data"
+dataExtractDir = "WIDER_extract"
+labelDir = "WIDER_label"
 labelTrainFileName = "wider_attribute_trainval.json"
 labelTestFileName = "wider_attribute_test.json"
 

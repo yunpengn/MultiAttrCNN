@@ -154,8 +154,9 @@ def cnn_model_fn(features, labels, mode):
 	# Returns the evaluation estimator (for EVAL mode)
 	return tf.estimator.EstimatorSpec(mode=mode, loss=loss, eval_metric_ops=eval_metric_ops)
 
-dataExtractDir = "extract"
-labelDir = "label"
+dataExtractDir = "WIDER_extract"
+labelDir = "WIDER_label"
+modelDir = "WIDER_model"
 labelTrainFileName = "wider_attribute_trainval.json"
 labelTestFileName = "wider_attribute_test.json"
 
@@ -233,7 +234,7 @@ def main(argv):
 	# Create the Estimator
 	gender_classifier = tf.estimator.Estimator(
 	    model_fn=cnn_model_fn,
-	    model_dir="model")
+	    model_dir=modelDir)
 
 	train_spec = tf.estimator.TrainSpec(
 		input_fn=train_input_fn,

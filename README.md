@@ -38,6 +38,11 @@ For more, see http://mmlab.ie.cuhk.edu.hk/projects/WIDERAttribute.html
 	- `p` will do port forwarding (for tensorboard later). Use `tensorboard --logdir ./ --host 0.0.0.0` to run tensorboard. Then you can see the board at [http://localhost:7007](http://localhost:7007).
 - From then on, you can start the container by `docker start tensorflow`. Then, you can login by `docker exec -it tensorflow bash`. To stop the container, run `docker stop tensorflow`.
 
+## Resources
+
+- http://mmlab.ie.cuhk.edu.hk/projects/WIDERAttribute.html
+- https://data.vision.ee.ethz.ch/cvl/rrothe/imdb-wiki/
+
 ## Licence
 
 [GNU General Public Licence 3.0](LICENSE)
