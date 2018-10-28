@@ -3,6 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 
+
 # Defines CNN topology
 class ConvNet(nn.Module):
     def __init__(self, num_classes=10):
@@ -27,7 +28,7 @@ class ConvNet(nn.Module):
         self.fc2 = torch.nn.Linear(64, 2)
 
     def forward(self, x):
-    	# conv1: from (3, 32, 32) to (18, 32, 32)
+        # conv1: from (3, 32, 32) to (18, 32, 32)
         x = F.relu(self.conv1(x))
         # pool1: from (18, 32, 32) to (18, 16, 16)
         x = self.pool1(x)
@@ -42,36 +43,46 @@ class ConvNet(nn.Module):
         # fc2: from 64 to 2
         return self.fc2(x)
 
-def train_net(net, data_loader, n_epochs, loss_fn, optimizer, batch_size=32, learning_rate=0.001, print_every=2000):
-	for epoch in range(n_epochs):
-		# Uses this variable to take note of the loss in the current round.
-		running_loss = 0.0
 
-		# Iterates through every data point.
-		for i, data in enumerate(data_loader, 0):
-			# Get inputs.
-	        inputs, labels = data
-	        # Set the parameter gradients to zero.
-	        optimizer.zero_grad()
+def train_net(net, train_loader, val_loader, n_epochs, loss_fn, optimizer, batch_size=32, learning_rate=0.001, print_every=2000):
+    for epoch in range(n_epochs):
+        # Uses this variable to take note of the loss in the current round.
+        running_loss = 0.0
 
-	        # Forward pass, backward pass, optimize.
-	        outputs = net(inputs)
-	        loss_size = loss_fn(outputs, labels)
-	        loss_size.backward()
-	        optimizer.step()
+        # Iterates through every data point in the training data-set.
+        for i, data in enumerate(train_loader, 0):
+            # Get inputs.
+            inputs, labels = data
+            # Set the parameter gradients to zero.
+            optimizer.zero_grad()
 
-	        # Updates the loss value.
-	        running_loss += loss.item()
+            # Forward pass, backward pass, optimize.
+            outputs = net(inputs)
+            loss_size = loss_fn(outputs, labels)
+            loss_size.backward()
+            optimizer.step()
 
-	        # Prints the average loss of every 2000 mini-batches.
-	        if i % print_every == (print_every - 1):
-	        	print("epoch=%d i=%d loss=%.3f" % epoch, i, running_loss / print_every)
-            running_loss = 0.0
+            # Updates the loss value.
+            running_loss += loss_fn.item()
 
+            # Prints the average loss of every 2000 mini-batches.
+            if i % print_every == (print_every - 1):
+                print("epoch=%d i=%d loss=%.3f" % epoch, i, running_loss / print_every)
+                running_loss = 0.0
         print("Finished the training of %d epoch(es)." % epoch)
 
-	print("Finished the training of all epoch(es).")
+        # Iterates through every data point in the validation data-set.
+        running_loss = 0.0
+        for inputs, labels in val_loader:
+            val_outputs = net(inputs)
+            val_loss_size = loss_fn(val_outputs, labels)
+            running_loss += val_loss_size.item()
+        print("epoch=%d validation loss=%.3f" % (epoch, running_loss / len(val_loader)))
 
+    print("Finished the training of all epoch(es).")
+
+
+# Initializes a CNN instance.
 net = ConvNet()
 loss_fn = nn.CrossEntropyLoss()
 optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
