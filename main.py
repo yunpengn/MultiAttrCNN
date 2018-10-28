@@ -38,6 +38,7 @@ def train_net(net, train_loader, val_loader, n_epochs, loss_fn, optimizer, print
             val_outputs = net(inputs)
             val_loss_size = loss_fn(val_outputs, labels)
             total_val_loss += val_loss_size.item()
+            print("epoch=%d accuracy=%.3f" % calculate_accuracy(val_outputs, labels))
 
         print("epoch=%d training loss=%.3f." % (epoch, total_train_loss / len(train_loader)))
         print("epoch=%d validation loss=%.3f." % (epoch, total_val_loss / len(val_loader)))
@@ -45,8 +46,19 @@ def train_net(net, train_loader, val_loader, n_epochs, loss_fn, optimizer, print
     print("Finished the training of all epoch(es).")
 
 
+def calculate_accuracy(predict, label):
+    length = min(len(predict), len(label))
+    count = 0
+
+    for i in range(length):
+        if predict[i] == label[i]:
+            count += 1
+
+    return count / length
+
+
 # Creates the data-set for training and validation.
-transformer = transforms.Compose([transforms.Resize((32,32)), transforms.ToTensor()])
+transformer = transforms.Compose([transforms.Resize((32, 32)), transforms.ToTensor()])
 train_set = ImageFolder("LFW_extract/train", transformer)
 print("Finished loading the training data-set.")
 val_set = ImageFolder("LFW_extract/val", transformer)
@@ -67,5 +79,5 @@ sgd_optimizer = optim.SGD(cnn_net.parameters(), lr=0.001, momentum=0.9)
 
 # Starts the training and validation of the model.
 print("Going to train the model...")
-train_net(cnn_net, train_loader, val_loader, 10, loss_fn, sgd_optimizer)
+train_net(cnn_net, train_loader, val_loader, 2, loss_fn, sgd_optimizer)
 print("Finished training the model...")
