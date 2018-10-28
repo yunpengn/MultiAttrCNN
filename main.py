@@ -40,14 +40,14 @@ def train_net(net, train_loader, val_loader, n_epochs, loss_fn, optimizer, print
             val_outputs = net(inputs)
             _, predicted = torch.max(val_outputs.data, 1)
             total_count += label.size(0)
-            correct_count += (predicted == label).sum()
+            correct_count += (predicted == label).sum().item()
 
             val_loss_size = loss_fn(val_outputs, label)
             total_val_loss += val_loss_size.item()
 
         print("epoch=%d training loss=%.3f." % (epoch, total_train_loss / len(train_loader)))
         print("epoch=%d validation loss=%.3f." % (epoch, total_val_loss / len(val_loader)))
-        print("epoch=%d accuracy=%.3f." % (epoch, correct_count / total_count))
+        print("epoch=%d accuracy=%.3f." % (epoch, 1.0 * correct_count / total_count))
 
     print("Finished the training of all epoch(es).")
 
