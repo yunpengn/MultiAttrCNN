@@ -22,11 +22,15 @@ RESIZE_HEIGHT = 32
 RESIZE_WIDTH = 32
 CHANNEL = 3
 BATCH = -1
-extract_dir = "LFW_extract"
+
+extract_dir = "LFW_extract_test"
 label_dir = "LFW_label"
 label_male_names = "male_names.txt"
 label_female_names = "female_names.txt"
 model_dir = "LFW_model"
+model_save_dir = "LFW_model_save"
+
+INPUT_TENSOR_NAME = "input_image"
 LOGGING_NAME = "sigmoid_tensor"
 
 # Model function for CNN.
@@ -158,6 +162,17 @@ def main(argv):
 
 	# Train the model (can increase the number of steps to improve accuracy)
 	tf.estimator.train_and_evaluate(gender_classifier, train_spec, val_spec)
+
+	def serving_input_fn():
+		serialized_tf_example = tf.placeholder(dtype=tf.uint8,
+			shape=[RESIZE_HEIGHT, RESIZE_WIDTH, CHANNEL], name=INPUT_TENSOR_NAME)
+		receiver_tensors = {'examples': serialized_tf_example}
+		features = tf.parse_example(serialized_tf_example, feature_spec)
+
+		return tf.estimator.export.ServingInputReceiver(features, receiver_tensors)
+
+	# Save the trained model to standard format.
+	gender_classifier.export_saved_model(model_save_dir, serving_input_receiver_fn=serving_input_fn)
 
 if __name__ == "__main__":
 	tf.app.run()
