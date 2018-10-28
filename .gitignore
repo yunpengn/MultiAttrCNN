@@ -9,6 +9,7 @@ LFW_data/
 LFW_extract/
 LFW_extract_test/
 LFW_model/
+LFW_model_torch/
 
 # IDE-specific folder
 .idea/
