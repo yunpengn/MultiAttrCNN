@@ -24,11 +24,11 @@ state_dict = torch.load(os.path.join(model_dir, latest_model))
 
 model = ConvolutionNet()
 model.load_state_dict(state_dict)
-classes = {0: "female", 1:"male"}
+classes = {0: "female", 1: "male"}
 transformer = transforms.Compose([transforms.Resize((32, 32)), transforms.ToTensor()])
 
 # Makes a prediction.
-image = load_single_image("LFW_extract/val/female/Ai_Sugiyama_0004.jpg", transformer)
+image = load_single_image("test/hyx.jpg", transformer)
 output = model(image)
 _, predict = torch.max(output.data, 1)
 print("The prediction result is %s." % classes[int(predict)])

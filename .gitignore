@@ -13,6 +13,7 @@ LFW_model_torch/
 
 # IDE-specific folder
 .idea/
+test/
 
 # OS-specific file
 .DS_Store
