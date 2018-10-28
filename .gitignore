@@ -7,6 +7,8 @@ WIDER_model/
 # LFW dataset folders
 LFW_data/
 LFW_extract/
+LFW_extract_test/
+LFW_model/
 
 # IDE-specific folder
 .idea/

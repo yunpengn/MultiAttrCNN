@@ -1,10 +1,6 @@
-import json
-import numpy as np
 import os
+import random
 import shutil
-import sys
-import tensorflow as tf
-import traceback
 
 data_dir = "LFW_data"
 extract_dir = "LFW_extract"
@@ -20,19 +16,29 @@ def convert_name_to_path(name):
 def copy_file(src, dest):
 	shutil.copyfile(src, dest)
 
+def is_train(rate = 0.2):
+	ran = random.uniform(0, 1)
+	return ran < 1 - rate
+
 def extract_gender(label_file, extract_train_folder, extract_val_folder):
 	with open(label_file) as f:
 		content = [line.strip().rstrip('\n') for line in f.readlines()]
 		print("Have read %s lines from file at %s." % (len(content), label_file))
 
-		for line in content:
+		for i, line in enumerate(content):
 			image_path = convert_name_to_path(line)
 			if (not os.path.isfile(image_path)):
 				print("WARNING: the image at %s does not exist." % image_path)
 				continue
 
-			dest_path = os.path.join(extract_train_folder, line)
+			if is_train():
+				dest_path = os.path.join(extract_train_folder, line)
+			else:
+				dest_path = os.path.join(extract_val_folder, line)
 			copy_file(image_path, dest_path)
+
+			if (i % 100 == 0):
+				print("Have handled %d images." % i)
 
 		print("Finished the processing on the file at %s." % label_file)
 
