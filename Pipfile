@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 torch = "==0.4.1"
 torchvision = "*"
+flask = "*"
 
 [dev-packages]
 
