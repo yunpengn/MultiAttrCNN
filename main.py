@@ -34,27 +34,22 @@ def train_net(net, train_loader, val_loader, n_epochs, loss_fn, optimizer, print
 
         # Iterates through every data point in the validation data-set.
         total_val_loss = 0.0
-        for inputs, labels in val_loader:
+        total_count = 0
+        correct_count = 0
+        for inputs, label in val_loader:
             val_outputs = net(inputs)
-            val_loss_size = loss_fn(val_outputs, labels)
+            _, predicted = torch.max(val_outputs.data, 1)
+            total_count += label.size(0)
+            correct_count += (predicted == label).sum()
+
+            val_loss_size = loss_fn(val_outputs, label)
             total_val_loss += val_loss_size.item()
-            print("epoch=%d accuracy=%.3f" % calculate_accuracy(val_outputs, labels))
 
         print("epoch=%d training loss=%.3f." % (epoch, total_train_loss / len(train_loader)))
         print("epoch=%d validation loss=%.3f." % (epoch, total_val_loss / len(val_loader)))
+        print("epoch=%d accuracy=%.3f." % (epoch, correct_count / total_count))
 
     print("Finished the training of all epoch(es).")
-
-
-def calculate_accuracy(predict, label):
-    length = min(len(predict), len(label))
-    count = 0
-
-    for i in range(length):
-        if predict[i] == label[i]:
-            count += 1
-
-    return count / length
 
 
 # Creates the data-set for training and validation.
