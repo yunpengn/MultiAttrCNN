@@ -83,6 +83,8 @@ def train_net(net, train_loader, val_loader, n_epochs, loss_fn, optimizer, batch
 
 
 # Initializes a CNN instance.
-net = ConvNet()
+cnn_net = ConvNet()
+# Defines the loss function.
 loss_fn = nn.CrossEntropyLoss()
-optimizer = optim.SGD(net.parameters(), lr=0.001, momentum=0.9)
+# Uses a SGD-based optimizer.
+optimizer = optim.SGD(cnn_net.parameters(), lr=0.001, momentum=0.9)
