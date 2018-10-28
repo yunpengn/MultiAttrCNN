@@ -48,6 +48,6 @@ def extract_gender(label_file, extract_train_folder, extract_val_folder):
 
 
 extract_gender(os.path.join(label_dir, label_male_names),
-               os.path.join(extract_dir, "train_male"), os.path.join(extract_dir, "val_male"))
+               os.path.join(extract_dir, "train/male"), os.path.join(extract_dir, "val/male"))
 extract_gender(os.path.join(label_dir, label_female_names),
-               os.path.join(extract_dir, "train_female"), os.path.join(extract_dir, "val_female"))
+               os.path.join(extract_dir, "train/female"), os.path.join(extract_dir, "val/female"))
