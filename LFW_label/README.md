@@ -1,8 +1,6 @@
-## Labeled Faces in the Wild
+# Labeled Faces in the Wild
 
 ##### University of Massachusetts - Amherst
-
-### lfw.tgz - the database
 
 The entire Labeled Faces in the Wild database can be downloaded as a gzipped tar file.  After uncompressing, the contents of the database will be placed in a new directory "lfw".
 
@@ -10,7 +8,7 @@ Each image is available as "lfw/name/name_xxxx.jpg", where "xxxx" is the image n
 
 There are a total of 13233 images and 5749 people in the database. Each image is a 250x250 jpg, detected and centered using the openCV implementation of Viola-Jones face detector.  The cropping region returned by the detector was then automatically enlarged by a factor of 2.2 in each dimension to capture more of the head and then scaled to a uniform size.
 
-### training paradigms
+### Training paradigms
 
 We give two possibilities for forming the training sets.
 
@@ -30,32 +28,22 @@ For instance, if George_W_Bush and John_Kerry both appear in one set, then any p
 
 We refer to this formulation as the Unrestricted Configuration, and provide the people.txt that gives the names of people in each set.
 
-### test procedure
+### Test procedure
 
 Under both configurations, the test procedure is the same.  That is, the training sets are formed from 9 of the 10 sets, with the held-out set as the test set.  The algorithm must then classify each pair from the held-out set, given in pairs.txt, based on the image information from that pair alone.  In other words, the algorithm's classification must be a function of the single pair of images, and not attempt to leverage the other test pairs.
 
 Note that, the pairs.txt is needed (for the purposes of computing the test performance), even under the Unrestricted Configuration.  Also, under the Unrestricted Configuration, one can form mismatch pairs from images across different sets in the training data.
 
 
-### training, validation, and testing
+### Training, validation, and testing
 
 We organize our data into two "Views".  View 1 is for algorithm development and general experimentation, prior to formal evaluation, i.e. model selection or validation.  View 2 is for performance reporting, and should be used only for the final evaluation of a method, to minimize "fitting to the test data".
 
 #### View 1: development training/testing sets
 
-We give the development sets in both configurations (image restricted
-and unrestricted).  The first configuration consists of
-pairsDevTraining.txt and pairsDevTest.txt.  The format for these two
-files is: the first line gives the number of matched pairs N (equal to
-the number of mismatched pairs) in the set, followed by N lines of
-matched pairs and N lines of mismatched pairs in the same format as
-the files for the performance reporting sets.
+We give the development sets in both configurations (image restricted and unrestricted).  The first configuration consists of pairsDevTraining.txt and pairsDevTest.txt.  The format for these two files is: the first line gives the number of matched pairs N (equal to the number of mismatched pairs) in the set, followed by N lines of matched pairs and N lines of mismatched pairs in the same format as the files for the performance reporting sets.
 
-The second configuration consists of peopleDevTraining.txt and
-peopleDevTest.txt.  The format for these two files is: the first line
-gives the number of people N in the set, followed by N lines of names
-and number of images per person in the same format as the files for
-the performance reporting sets.
+The second configuration consists of peopleDevTraining.txt and peopleDevTest.txt.  The format for these two files is: the first line gives the number of people N in the set, followed by N lines of names and number of images per person in the same format as the files for the performance reporting sets.
 
 #### View 2: performance testing configurations
 
@@ -93,19 +81,12 @@ George_W_Bush   530
 
 The next subsequent line gives the number of people in the second set, followed by the names and number of images of the people in the second set.  This procedure is repeated for all 10 sets.
 
-
-### additional details
+### Additional details
 
 For additional details on how the database was constructed, as well as how the configurations were chosen for performance reporting, please refer to our technical report:
 
-Gary B. Huang, Manu Ramesh, Tamara Berg, and Erik Learned-Miller.
-Labeled Faces in the Wild: A Database for Studying Face Recognition in Unconstrained Environments.
-University of Massachusetts, Amherst, Technical Report 07-49, October, 2007.
+Gary B. Huang, Manu Ramesh, Tamara Berg, and Erik Learned-Miller. Labeled Faces in the Wild: A Database for Studying Face Recognition in Unconstrained Environments. University of Massachusetts, Amherst, Technical Report 07-49, October, 2007.
 
-For updated details on categories of LFW results, including
-information concerning unsupervised methods and methods using external
-training data, please refer to our follow-up technical report:
+For updated details on categories of LFW results, including information concerning unsupervised methods and methods using external training data, please refer to our follow-up technical report:
 
-Gary B. Huang and Erik Learned-Miller.
-Labeled Faces in the Wild: Updates and New Reporting Procedures.
-UMass Amherst Technical Report UM-CS-2014-003, 2014.
+Gary B. Huang and Erik Learned-Miller. Labeled Faces in the Wild: Updates and New Reporting Procedures. UMass Amherst Technical Report UM-CS-2014-003, 2014.
