@@ -42,6 +42,7 @@ For more, see http://mmlab.ie.cuhk.edu.hk/projects/WIDERAttribute.html
 
 - http://mmlab.ie.cuhk.edu.hk/projects/WIDERAttribute.html
 - https://data.vision.ee.ethz.ch/cvl/rrothe/imdb-wiki/
+- http://vis-www.cs.umass.edu/lfw/
 
 ## Licence
 

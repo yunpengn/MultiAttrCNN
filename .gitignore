@@ -4,6 +4,10 @@ WIDER_extract/
 WIDER_label/
 WIDER_model/
 
+# LFW dataset folders
+LFW_data/
+LFW_extract/
+
 # IDE-specific folder
 .idea/
 
