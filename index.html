@@ -42,13 +42,41 @@
         <br>
         <form method="post" action="http://localhost:5000/gender_predict" enctype="multipart/form-data">
 			<div class="custom-file">
-				<input type="file" class="custom-file-input" id="face_image" name="face_image" accept="image/*">
+				<input type="file" class="custom-file-input" id="face_image" name="face_image" accept="image/*;capture=camera">
 				<label class="custom-file-label" for="face_image">Choose file</label>
 			</div>
 			<br><br>
-            <button type="submit" class="btn btn-primary">Sign in</button>
+			<video id="player" controls autoplay hidden></video>
+			<button id="capture">Capture</button>
+			<canvas id="snapshot" width="250" height="250"></canvas>
+			<br><br>
+            <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>
 </div>
+
+<script>
+'use strict';
+
+let player = document.getElementById('player');
+let snapshot = document.getElementById('snapshot');
+let captureButton = document.getElementById('capture');
+let faceImageField = document.getElementById('face_image');
+
+const handleSuccess = function(stream) {
+	// Attach the video stream to the video element and autoplay.
+	player.srcObject = stream;
+	faceImageField
+};
+
+captureButton.addEventListener('click', function() {
+	const context = snapshot.getContext('2d');
+
+	// Draw the video frame to the canvas.
+	context.drawImage(player, 0, 0, snapshot.width, snapshot.height);
+});
+
+navigator.mediaDevices.getUserMedia({video: true}).then(handleSuccess);
+</script>
 </body>
 </html>
