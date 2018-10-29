@@ -1,4 +1,4 @@
-from convolution_net import ConvolutionNet
+from gender_cnn import GenderCnn
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -66,7 +66,7 @@ val_loader = DataLoader(val_set, batch_size=4, shuffle=True, num_workers=2)
 print("Finished creating the validation data-loader.")
 
 # Initializes a CNN instance.
-cnn_net = ConvolutionNet()
+cnn_net = GenderCnn()
 # Defines the loss function.
 loss_fn = nn.CrossEntropyLoss()
 # Uses a SGD-based optimizer.

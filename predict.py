@@ -1,6 +1,6 @@
 import os
 import torch
-from convolution_net import ConvolutionNet
+from gender_cnn import GenderCnn
 from PIL import Image
 from torch.autograd import Variable
 import torchvision.transforms as transforms
@@ -22,7 +22,7 @@ model_dir = "LFW_model_torch"
 latest_model = "cnn_epoch19.pkl"
 state_dict = torch.load(os.path.join(model_dir, latest_model))
 
-model = ConvolutionNet()
+model = GenderCnn()
 model.load_state_dict(state_dict)
 classes = {0: "female", 1: "male"}
 transformer = transforms.Compose([transforms.Resize((32, 32)), transforms.ToTensor()])

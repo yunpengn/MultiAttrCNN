@@ -1,4 +1,5 @@
-from convolution_net import ConvolutionNet
+from age_cnn import AgeCnn
+from gender_cnn import GenderCnn
 import flask
 import io
 import os
@@ -7,52 +8,59 @@ import torch
 from torch.autograd import Variable
 import torchvision.transforms as transforms
 
+# Instantiates a Flask app.
 app = flask.Flask(__name__)
-classes = {0: "female", 1: "male"}
-transformer = transforms.Compose([transforms.Resize((32, 32)), transforms.ToTensor()])
-model = ConvolutionNet()
+# Determines the folder in which all models are stored.
+model_dir = "model"
+
+# Defines the class-to-label mapping.
+classes = {"gender": ["female", "male"],
+           "age": ['0', '10', '15', '20', '25', '30', '35', '40', '45', '5', '50', '55', '60', '65', '70', '75', '80', '85', '90', '95']}
+model = {"gender": GenderCnn(), "age": AgeCnn()}
+transformer = {"gender": transforms.Compose([transforms.Resize((32, 32)), transforms.ToTensor()]),
+               "age": transforms.Compose([transforms.Resize((128, 128)), transforms.ToTensor()])}
 
 POST_PARAM = "face_image"
 
 
+# Loads all models into memory.
 def load_model():
     global model
 
-    model_dir = "LFW_model_torch"
-    latest_model = "cnn_epoch19.pkl"
-    state_dict = torch.load(os.path.join(model_dir, latest_model))
-
-    model.load_state_dict(state_dict)
-    model.eval()
+    for key in model:
+        state_dict = torch.load(os.path.join(model_dir, key + ".pkl"))
+        model[key].load_state_dict(state_dict)
+        model[key].eval()
 
 
-def load_image(image):
-    loaded = Image.open(io.BytesIO(image))
-    transformed = transformer(loaded).float()
+# Loads a single image from HTTP POST request.
+def load_image(attribute, image):
+    transformed = transformer[attribute](image).float()
     variable = Variable(transformed)
     return variable.unsqueeze(0)
 
 
-def predict_gender(image):
-    output = model(image)
+# Given an image, predicts a certain human attribute.
+def predict_attribute(attribute, image):
+    output = model[attribute](image)
     _, prediction = torch.max(output.data, 1)
-    return classes[int(prediction)]
+    return classes[attribute][int(prediction)]
 
 
-@app.route("/gender_predict", methods=["POST"])
+@app.route("/predict", methods=["POST"])
 def predict():
-    # Initialize the data dictionary that will be returned from the view.
+    # Initializes the data dictionary that will be returned from the view.
     data = {"success": False}
 
-    # Ensure an image was properly uploaded to our endpoint.
+    # Ensures an image was properly uploaded to our endpoint.
     if flask.request.method == "POST" and flask.request.files.get(POST_PARAM):
-        # Read the image in PIL format
+        # Reads the image in PIL format
         parameter = flask.request.files[POST_PARAM].read()
-        image = load_image(parameter)
-        result = predict_gender(image)
+        image = Image.open(io.BytesIO(parameter))
 
-        # Returns the result.
-        data["gender"] = result
+        # Calculates multiple human attributes.
+        data["gender"] = predict_attribute("gender", load_image("gender", image))
+        data["age"] = predict_attribute("age", load_image("age", image))
         data["success"] = True
 
     # Return the data dictionary as a JSON response.

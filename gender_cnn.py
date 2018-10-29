@@ -1,12 +1,11 @@
-import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
 
 # Defines CNN topology
-class ConvolutionNet(nn.Module):
-    def __init__(self, num_classes=10):
-        super(ConvolutionNet, self).__init__()
+class GenderCnn(nn.Module):
+    def __init__(self):
+        super(GenderCnn, self).__init__()
 
         # Input channels = 3 (32 * 32), output channels = 18 (32 * 32)
         self.conv1 = nn.Conv2d(3, 18, kernel_size=3, stride=1, padding=1)
