@@ -15,7 +15,8 @@ model_dir = "model"
 
 # Defines the class-to-label mapping.
 classes = {"gender": ["female", "male"],
-           "age": ['0', '10', '15', '20', '25', '30', '35', '40', '45', '5', '50', '55', '60', '65', '70', '75', '80', '85', '90', '95']}
+           "age": ['0', '10', '15', '20', '25', '30', '35', '40', '45', '5', '50', '55', '60', '65', '70',
+                   '75', '80', '85', '90', '95']}
 model = {"gender": GenderCnn(), "age": AgeCnn()}
 transformer = {"gender": transforms.Compose([transforms.Resize((32, 32)), transforms.ToTensor()]),
                "age": transforms.Compose([transforms.Resize((128, 128)), transforms.ToTensor()])}

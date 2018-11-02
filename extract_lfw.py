@@ -1,3 +1,4 @@
+import errno
 import os
 import random
 import shutil
@@ -19,12 +20,30 @@ def copy_file(src, dest):
     shutil.copyfile(src, dest)
 
 
+def create_folder(path):
+    if not os.path.exists(path):
+        try:
+            os.makedirs(path)
+        except OSError as e:
+            # To deal with potential racing conditions.
+            if e.errno != errno.EEXIST:
+                raise
+
+
 def is_train(rate=0.2):
     ran = random.uniform(0, 1)
     return ran < 1 - rate
 
 
 def extract_gender(label_file, extract_train_folder, extract_val_folder, amount=-1):
+    # Removes the old extracted data
+    shutil.rmtree(extract_train_folder, ignore_errors=True)
+    shutil.rmtree(extract_val_folder, ignore_errors=True)
+
+    # Create the relevant directories.
+    create_folder(extract_train_folder)
+    create_folder(extract_val_folder)
+
     with open(label_file) as f:
         content = [line.strip().rstrip('\n') for line in f.readlines()]
         print("Have read %s lines from file at %s." % (len(content), label_file))
