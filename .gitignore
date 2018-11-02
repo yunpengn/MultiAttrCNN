@@ -16,6 +16,9 @@ LFW_model_torch/
 test/
 model/
 
+# nohup log files
+nohup.out
+
 # OS-specific file
 .DS_Store
 
