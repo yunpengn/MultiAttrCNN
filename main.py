@@ -74,5 +74,5 @@ sgd_optimizer = optim.SGD(cnn_net.parameters(), lr=0.001, momentum=0.9)
 
 # Starts the training and validation of the model.
 print("Going to train the model...")
-train_net(cnn_net, train_loader, val_loader, 2, loss_fn, sgd_optimizer)
+train_net(cnn_net, train_loader, val_loader, 20, loss_fn, sgd_optimizer)
 print("Finished training the model...")

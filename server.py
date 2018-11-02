@@ -64,6 +64,7 @@ def predict():
         data["success"] = True
 
     # Return the data dictionary as a JSON response.
+    print("Sent prediction result %s" % data)
     return flask.jsonify(data)
 
 

@@ -24,12 +24,16 @@ def is_train(rate=0.2):
     return ran < 1 - rate
 
 
-def extract_gender(label_file, extract_train_folder, extract_val_folder):
+def extract_gender(label_file, extract_train_folder, extract_val_folder, amount=-1):
     with open(label_file) as f:
         content = [line.strip().rstrip('\n') for line in f.readlines()]
         print("Have read %s lines from file at %s." % (len(content), label_file))
 
         for i, line in enumerate(content):
+            # Stops the extract if has already reached the limit.
+            if amount != -1 and i > amount:
+                break
+
             image_path = convert_name_to_path(line)
             if not os.path.isfile(image_path):
                 print("WARNING: the image at %s does not exist." % image_path)
@@ -47,7 +51,8 @@ def extract_gender(label_file, extract_train_folder, extract_val_folder):
         print("Finished the processing on the file at %s." % label_file)
 
 
+# Tries to extract the same amount of data for both genders.
 extract_gender(os.path.join(label_dir, label_male_names),
-               os.path.join(extract_dir, "train/male"), os.path.join(extract_dir, "val/male"))
+               os.path.join(extract_dir, "train/male"), os.path.join(extract_dir, "val/male"), 3300)
 extract_gender(os.path.join(label_dir, label_female_names),
                os.path.join(extract_dir, "train/female"), os.path.join(extract_dir, "val/female"))

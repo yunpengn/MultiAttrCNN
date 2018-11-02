@@ -28,7 +28,7 @@ classes = {0: "female", 1: "male"}
 transformer = transforms.Compose([transforms.Resize((32, 32)), transforms.ToTensor()])
 
 # Makes a prediction.
-image = load_single_image("test/hyx.jpg", transformer)
+image = load_single_image("test/min-yen.jpg", transformer)
 output = model(image)
 _, predict = torch.max(output.data, 1)
 print("The prediction result is %s." % classes[int(predict)])
