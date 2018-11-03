@@ -1,4 +1,6 @@
 from gender_cnn import GenderCnn
+import pandas as panda
+from time import time
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -7,7 +9,14 @@ import torchvision.transforms as transforms
 from torchvision.datasets import ImageFolder
 
 
-def train_net(net, train_loader, val_loader, n_epochs, loss_fn, optimizer, print_every=2000):
+def save_csv(data_frame, file_path, separator=',', encoding='utf-8', float_format='%.7f'):
+  data_frame.to_csv(file_path, separator, encoding, float_format)
+
+
+def train_net(net, train_loader, val_loader, n_epochs, loss_fn, optimizer):
+    # Uses a list to record down some statistics.
+    statistics = []
+
     for epoch in range(n_epochs):
         total_train_loss = 0.0
 
@@ -47,8 +56,12 @@ def train_net(net, train_loader, val_loader, n_epochs, loss_fn, optimizer, print
 
         print("epoch=%d training loss=%.3f." % (epoch, total_train_loss / len(train_loader)))
         print("epoch=%d validation loss=%.3f." % (epoch, total_val_loss / len(val_loader)))
-        print("epoch=%d accuracy=%.3f." % (epoch, 1.0 * correct_count / total_count))
+        print("epoch=%d accuracy=%.3f.\n" % (epoch, 1.0 * correct_count / total_count))
+        statistics.append({"train_loss": total_train_loss / len(train_loader),
+                           "val_loss": total_val_loss / len(val_loader),
+                           "accuracy": 1.0 * correct_count / total_count})
 
+    save_csv(panda.DataFrame(statistics), 'LFW_model_torch/statistics_{}.csv'.format(time()))
     print("Finished the training of all epoch(es).")
 
 
