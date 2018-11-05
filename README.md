@@ -1,5 +1,7 @@
 # CS3244 Project
 
+This project is participating in NUS SoC 13th STePS. For more information, see [here](http://isteps.comp.nus.edu.sg/event/13th-steps/module/CS3244/project/2).
+
 ## Notes regarding the WIDER dataset
 
 WIDER Attribute is a large-scale human attribute dataset. It contains 13789 images belonging to 30 scene categories, and 57524 human bounding boxes each annotated with 14 binary attributes.
