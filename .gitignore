@@ -1,3 +1,27 @@
+# WIDER dataset folders
+WIDER_data/
+WIDER_extract/
+WIDER_label/
+WIDER_model/
+
+# LFW dataset folders
+LFW_data/
+LFW_extract/
+LFW_extract_test/
+LFW_model/
+LFW_model_torch/
+
+# IDE-specific folder
+.idea/
+test/
+model/
+
+# nohup log files
+nohup.out
+
+# OS-specific file
+.DS_Store
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

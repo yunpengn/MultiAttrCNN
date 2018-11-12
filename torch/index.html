@@ -1,0 +1,81 @@
+<!DOCTYPE html lang="en">
+<html>
+<head>
+	<!-- Webpage title -->
+	<title>Gender Prediction</title>
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<link rel="shortcut icon" href="favicon.ico">
+
+	<meta name="theme-color" content="#ededed">
+	<meta name="description" content="Gender Prediction">
+	<meta name="keywords" content="gender,ai,ml,cnn">
+	<meta name="author" content="CS3244 Project">
+
+	<!--[if lt IE 9]>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.min.js"></script>
+	<![endif]-->
+
+	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet"
+		  integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<link href="https://maxcdn.bootstrapcdn.com/bootswatch/4.0.0/cosmo/bootstrap.min.css" rel="stylesheet"
+		  integrity="sha384-UU2jkdv1M9UEjLje/kygVxqMBq9Jrg9z+Gqvw972H6BqKTzDvLaRJfK7PnzLM4SI" crossorigin="anonymous">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.16/datatables.min.css"/>
+
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+			integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+			integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+			integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+	<!-- Scripts for Google Analytics -->
+	<!-- Put the script provided by Google here. -->
+</head>
+<body>
+<br>
+<div class="container">
+    <div class="col-12 col-sm-8 offset-sm-2 col-md-4 offset-md-4 col-lg-6 offset-lg-3 col-xl-6 offset-xl-3">
+        <h1>Gender Prediction</h1>
+        <br>
+        <form method="post" action="http://localhost:5000/predict" enctype="multipart/form-data">
+			<div class="custom-file">
+				<input type="file" class="custom-file-input" id="face_image" name="face_image" accept="image/*;capture=camera">
+				<label class="custom-file-label" for="face_image">Choose file</label>
+			</div>
+			<br><br>
+			<video id="player" controls autoplay hidden></video>
+			<button id="capture">Capture</button>
+			<canvas id="snapshot" width="250" height="250"></canvas>
+			<br><br>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+</div>
+
+<script>
+'use strict';
+
+let player = document.getElementById('player');
+let snapshot = document.getElementById('snapshot');
+let captureButton = document.getElementById('capture');
+let faceImageField = document.getElementById('face_image');
+
+const handleSuccess = function(stream) {
+	// Attach the video stream to the video element and autoplay.
+	player.srcObject = stream;
+};
+
+captureButton.addEventListener('click', function() {
+	const context = snapshot.getContext('2d');
+
+	// Draw the video frame to the canvas.
+	context.drawImage(player, 0, 0, snapshot.width, snapshot.height);
+});
+
+navigator.mediaDevices.getUserMedia({video: true}).then(handleSuccess);
+</script>
+</body>
+</html>
