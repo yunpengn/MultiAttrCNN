@@ -20,8 +20,11 @@ image {
 }
 
 target {
-	"attribute"         : [int]             # A list of int, the i-th element corresponds to the i-th attribute, and the value could be 1(possitive), -1(negative) or 0(unspecified)
-	"bbox"              : [x, y, width, height] # Human bounding box
+    # A list of int, the i-th element corresponds to the i-th attribute, and 
+    # the value could be 1(possitive), -1(negative) or 0(unspecified)
+	"attribute"         : [int]    
+	# Human bounding box         
+	"bbox"              : [x, y, width, height]
 }
 ```
 
