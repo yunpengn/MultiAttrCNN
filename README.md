@@ -22,15 +22,19 @@ image {
 }
 
 target {
-    # A list of int, the i-th element corresponds to the i-th attribute, and 
+    # A list of int, the i-th element corresponds to the i-th attribute, and
     # the value could be 1(possitive), -1(negative) or 0(unspecified)
-    "attribute"         : [int]    
-    # Human bounding box         
+    "attribute"         : [int]
+    # Human bounding box
     "bbox"              : [x, y, width, height]
 }
 ```
 
 For more, see http://mmlab.ie.cuhk.edu.hk/projects/WIDERAttribute.html
+
+## Notes regarding the LFW dataset
+
+See [here](LFW.md).
 
 ## Using [Docker](https://www.docker.com) to install Tensorflow
 

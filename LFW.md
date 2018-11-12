@@ -1,4 +1,4 @@
-# Labeled Faces in the Wild
+# Labeled Faces in the Wild (LFW)
 
 ##### University of Massachusetts - Amherst
 

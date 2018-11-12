@@ -1,22 +1,15 @@
 # WIDER dataset folders
-WIDER_data/
-WIDER_extract/
-WIDER_label/
-WIDER_model/
-model/
-test/
+WIDER/
 
 # LFW dataset folders
-LFW_data/
-LFW_extract/
-LFW_extract_test/
-LFW_model/
-LFW_model_torch/
+LFW/
+
+# Training-specific folders
+model/
+test/
 
 # IDE-specific folder
 .idea/
-test/
-model/
 
 # nohup log files
 nohup.out
