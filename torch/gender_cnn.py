@@ -6,6 +6,7 @@ import torch.nn.functional as F
 class GenderCnn(nn.Module):
     def __init__(self):
         super(GenderCnn, self).__init__()
+        self.predict = True
 
         # Input channels = 3 (32 * 32), output channels = 18 (32 * 32)
         self.conv1 = nn.Conv2d(3, 18, kernel_size=3, stride=1, padding=1)
@@ -44,14 +45,15 @@ class GenderCnn(nn.Module):
         # pool2: from (18, 16, 16) to (18, 8, 8)
         x = self.pool2(x)
         # conv3: from (18, 8, 8) to (18, 8, 8)
-        x = self.conv3(x)
+        x = F.relu(self.conv3(x))
         # conv4: from (18, 8, 8) to (18, 8, 8)
-        x = self.conv4(x)
+        x = F.relu(self.conv4(x))
         # re-shape: from pool2 to fc1
         x = x.view(-1, 18 * 8 * 8)
         # fc1: from 1152 (18 * 8 * 8) to 64
         x = F.relu(self.fc1(x))
         # dropout: p = 0.5
-        x = self.dropout(x)
+        if not self.predict:
+            x = self.dropout(x)
         # fc2: from 64 to 2
         return self.fc2(x)
