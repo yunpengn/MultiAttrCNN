@@ -46,12 +46,13 @@ class LongSleeveCnn(nn.Module):
 
     def forward(self, x):
         x = F.relu(self.conv1(x))
-        x = self.pool1(x)
         x = F.relu(self.conv2(x))
-        x = self.pool2(x)
+        x = self.pool1(x)
         x = F.relu(self.conv3(x))
-        x = self.pool3(x)
+        x = self.pool2(x)
         x = F.relu(self.conv4(x))
+        x = self.pool3(x)
+        x = F.relu(self.conv5(x))
         x = self.pool4(x)
         # re-shape: from pool2 to fc1
         x = x.view(-1, 18 * 8 * 8)
