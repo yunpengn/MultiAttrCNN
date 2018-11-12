@@ -8,15 +8,15 @@ The annotations are stored in JSON file format. The data structure is:
 
 ```
 {
-	"images"            : [image],          # A list of "image" (see below)
-	"attribute_id_map"  : {str : str},      # A dict, mapping attribute_id to attribute_name
-	"scene_id_map"      : {str : str}       # A dict, mapping scene_id to scene_name
+    "images"            : [image],          # A list of "image" (see below)
+    "attribute_id_map"  : {str : str},      # A dict, mapping attribute_id to attribute_name
+    "scene_id_map"      : {str : str}       # A dict, mapping scene_id to scene_name
 }
 
 image {
-	"targets"           : [target],         # A list of "target" (see below)
-	"file_name"         : str,              # Image file name
-	"scene_id"          : int               # Scene id
+    "targets"           : [target],         # A list of "target" (see below)
+    "file_name"         : str,              # Image file name
+    "scene_id"          : int               # Scene id
 }
 
 target {
