@@ -3,12 +3,15 @@ WIDER_data/
 WIDER_extract/
 WIDER_label/
 WIDER_model/
+model/
+test/
 
 # LFW dataset folders
 LFW_data/
 LFW_extract/
 LFW_extract_test/
 LFW_model/
+LFW_model_torch/
 
 # IDE-specific folder
 .idea/
