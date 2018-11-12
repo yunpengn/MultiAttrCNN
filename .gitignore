@@ -3,6 +3,8 @@ WIDER_data/
 WIDER_extract/
 WIDER_label/
 WIDER_model/
+model/
+test/
 
 # LFW dataset folders
 LFW_data/
