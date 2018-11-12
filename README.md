@@ -30,7 +30,7 @@ target {
 }
 ```
 
-For more, see http://mmlab.ie.cuhk.edu.hk/projects/WIDERAttribute.html
+For more, see their webpage at [here](http://mmlab.ie.cuhk.edu.hk/projects/WIDERAttribute.html).
 
 ## Notes regarding the LFW dataset
 
