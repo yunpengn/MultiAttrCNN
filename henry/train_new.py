@@ -18,9 +18,6 @@
 #  limitations under the License.
 """Convolutional Neural Network Estimator for MNIST, built with tf.layers."""
 
-#from google.colab import drive
-#drive.mount('/content/drive/CS3244')
-
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
@@ -30,7 +27,6 @@ import numpy as np
 import tensorflow as tf
 import json
 import os
-import cv2
 
 sourceDir = "cropped_set"
 annotationDir = "wider_attribute_annotation"
@@ -57,7 +53,10 @@ def parse_fn(filename, scenes, label):
 	image /= 255
 	image -= 0.5
 	
-	return (image, label)
+	image2 = tf.image.decode_image(tf.read_file(filename), channels=3)
+	image2 /= 255
+	image2 -= 0.5
+	return (tf.concat([image, image2], 2), label)
 
 def train_parse_fn(filename, scenes, label):
 	image = tf.image.decode_image(tf.read_file(filename), channels=3)
@@ -65,7 +64,11 @@ def train_parse_fn(filename, scenes, label):
 	image /= 255
 	image -= 0.5
 	
-	return (image, label)
+	image2 = tf.image.decode_image(tf.read_file(filename), channels=3)
+	image2 = _augment_helper(image2)
+	image2 /= 255
+	image2 -= 0.5
+	return (tf.concat([image, image2], 2), label)
 
 def add_salt_pepper_noise(input):
 	weights = np.ones([image_size, image_size, 3])
@@ -87,10 +90,10 @@ def _augment_helper(image):
 	#brightness
 	#result = tf.image.random_brightness(result, max_delta= 0.1)
 	#crop and translate
-	box = np.array([[np.random.random() * 0.2, np.random.random() * 0.2, 0.8 + np.random.random() * 0.2, 0.8 + np.random.random() * 0.2]], dtype=np.float32)
-	result = tf.reshape(tf.image.crop_and_resize(tf.reshape(result, [1, image_size, image_size, 3]), box, [0], [image_size, image_size]), [image_size, image_size, 3])
+	#box = np.array([[np.random.random() * 0.2, np.random.random() * 0.2, 0.8 + np.random.random() * 0.2, 0.8 + np.random.random() * 0.2]], dtype=np.float32)
+	#result = tf.reshape(tf.image.crop_and_resize(tf.reshape(result, [1, image_size, image_size, 3]), box, [0], [image_size, image_size]), [image_size, image_size, 3])
 	#rotate
-	result = tf.contrib.image.rotate(result, np.random.random() * 15 * math.pi / 180, interpolation='BILINEAR')
+	#result = tf.contrib.image.rotate(result, np.random.random() * 15 * math.pi / 180, interpolation='BILINEAR')
 	#salt and pepper
 	result = add_salt_pepper_noise(result)	
 	return result
@@ -134,72 +137,33 @@ def test_input_fn():
 	dataset = dataset.prefetch(buffer_size=prefetch_buffer_size)
 	return dataset
 
-def create_img_fn():
-	with open(sourceDir + "/" + annotationDir + "/" + testJson, 'r') as f:
-		annotationDict = json.load(f)
-	filenames = [sourceDir + "/" + imageDir + "/" + annotationDict[str(i)]["filename"] for i in range(len(annotationDict))][:10]
-	scenes = [sourceDir + "/" + imageDir + "/" + annotationDict[str(i)]["scene"] for i in range(len(annotationDict))][:10]
-	labels = [[(annotationDict[str(i)]["attribute"][selected_number] + 1) / 2] for i in range(len(annotationDict))][:10]
-	dataset = tf.data.Dataset.from_tensor_slices((filenames, scenes, labels))
-	dataset = dataset.apply(tf.contrib.data.map_and_batch(
-		map_func=parse_fn, batch_size=batch_size))
-	dataset = dataset.prefetch(buffer_size=prefetch_buffer_size)
-	return dataset
-	
 def cnn_model_fn(features, labels, mode):
 	"""Model function for CNN."""
-	l2_reg_mult = tf.contrib.layers.l2_regularizer(scale=0.0000)
-	l2_reg = tf.contrib.layers.l2_regularizer(scale=0.0000)
+	l2_reg = tf.contrib.layers.l2_regularizer(scale=0.00)
 
 	# Input Layer
 	# Reshape X to 4-D tensor: [batch_size, width, height, channels]
-	features = tf.reshape(features, [-1, image_size, image_size, 3])
-	input_layer = features
-#	input_layer, context_layer = tf.split(features, [3, 3], 3)
+	features = tf.reshape(features, [-1, image_size, image_size, 6])
+	input_layer, context_layer = tf.split(features, [3, 3], 3)
 
-	kernel_1 = tf.get_variable("kernel_1", regularizer=l2_reg_mult, initializer=tf.truncated_normal([5,5,3,8], stddev=0.1))
-	biases_1 = tf.get_variable("biases_1", initializer=tf.zeros([8]))
-	kernel_2 = tf.get_variable("kernel_2", regularizer=l2_reg_mult, initializer=tf.truncated_normal([5,5,8,8], stddev=0.1))
-	biases_2 = tf.get_variable("biases_2", initializer=tf.zeros([8]))
-	kernel_3 = tf.get_variable("kernel_3", initializer=tf.truncated_normal([5,5,8,1], stddev=0.1))
-	biases_3 = tf.get_variable("biases_3", initializer=tf.zeros([1]))
-
-	att1 = tf.add(tf.nn.conv2d(
-		input=input_layer,
-		filter=kernel_1,
-		strides=[1, 1, 1, 1],
-		padding='SAME'), biases_1)
-	att2 = tf.add(tf.nn.conv2d(
-		input=att1,
-		filter=kernel_2,
-		strides=[1, 1, 1, 1],
-		padding='SAME'), biases_2)
-	att3 = tf.nn.sigmoid(tf.add(tf.nn.conv2d(
-		input=att2,
-		filter=kernel_3,
-		strides=[1, 1, 1, 1],
-		padding='SAME'), biases_3))
-
-	"""
 	att1 = tf.layers.conv2d(
 		inputs=input_layer,
 		filters=8,
-		kernel_size=[5, 5],
+		kernel_size=[3, 3],
 		padding="same",
-		activation=None)
+		activation=tf.nn.relu)
 	att2 = tf.layers.conv2d(
 		inputs=att1,
 		filters=8,
-		kernel_size=[5, 5],
+		kernel_size=[3, 3],
 		padding="same",
-		activation=None)
+		activation=tf.nn.relu)
 	att3 = tf.layers.conv2d(
 		inputs=att2,
 		filters=1,
-		kernel_size=[5, 5],
+		kernel_size=[3, 3],
 		padding="same",
 		activation=tf.nn.sigmoid)
-	"""
 
 	filtered = tf.multiply(input_layer, att3)
 	conv1a = tf.layers.conv2d(
@@ -242,7 +206,6 @@ def cnn_model_fn(features, labels, mode):
 	pool4 = tf.layers.max_pooling2d(inputs=conv4a, pool_size=[3, 3], strides=2)
 	norm4 = tf.nn.lrn(pool4)
 
-	"""
 	context_conv1a = tf.layers.conv2d(
 		inputs=context_layer,
 		filters=8,
@@ -282,9 +245,10 @@ def cnn_model_fn(features, labels, mode):
 		activation=tf.nn.relu)
 	context_pool4 = tf.layers.max_pooling2d(inputs=context_conv4a, pool_size=[3, 3], strides=2)
 	context_norm4 = tf.nn.lrn(context_pool4)
-	"""
 
-	flat_layer = tf.reshape(norm4, [-1, 7 * 7 * 16])
+	flat_layer = tf.reshape(tf.concat([norm4, context_norm4], 3), [-1, 7 * 7 * 32])
+#	flat_layer = tf.reshape(norm4, [-1, 7 * 7 * 16])
+
 
 	# Dense Layer
 	# Densely connected layer with 1024 neurons
@@ -301,7 +265,7 @@ def cnn_model_fn(features, labels, mode):
 	# Output Tensor Shape: [batch_size, 1]
 	logits = tf.layers.dense(inputs=dropout, units=1)
 
-	predictions = {"original" : input_layer, "result" : filtered,
+	predictions = {
 		# Add `sigmoid_tensor` to the graph. It is used for PREDICT and by the
 		# `logging_hook`.
 		"probabilities": tf.nn.sigmoid(logits, name="sigmoid_tensor")
@@ -317,16 +281,10 @@ def cnn_model_fn(features, labels, mode):
 	# Configure the Training Op (for TRAIN mode)
 	if mode == tf.estimator.ModeKeys.TRAIN:
 		#optimizer = tf.train.GradientDescentOptimizer(learning_rate=0.001)
-		optimizer1 = tf.train.AdamOptimizer(learning_rate=0.001)
-		optimizer2 = tf.train.AdamOptimizer(learning_rate=0.001)
-		train_op1 = optimizer1.minimize(
-			loss=loss,
-			var_list=[kernel_1, biases_1, kernel_2, biases_2, kernel_3, biases_3],
-			global_step=tf.train.get_global_step())
-		train_op2 = optimizer1.minimize(
+		optimizer = tf.train.AdamOptimizer(learning_rate=0.001)
+		train_op = optimizer.minimize(
 			loss=loss,
 			global_step=tf.train.get_global_step())
-		train_op = tf.group(train_op1, train_op2)
 		return tf.estimator.EstimatorSpec(mode=mode, loss=loss, train_op=train_op)
 
 	# Add evaluation metrics (for EVAL mode)
@@ -340,7 +298,7 @@ def cnn_model_fn(features, labels, mode):
 def main(unused_argv):
 	# Create the Estimator
 	gender_classifier = tf.estimator.Estimator(
-		model_fn=cnn_model_fn, model_dir="model/gender_model")
+		model_fn=cnn_model_fn, model_dir="model/longsleeves_model")
 
 	# Set up logging for predictions
 	# Log the values in the "Sigmoid" tensor with label "probabilities"
@@ -355,7 +313,7 @@ def main(unused_argv):
 	train_spec = tf.estimator.TrainSpec(
 		input_fn=train_input_fn,
 		hooks=[logging_hook],
-		max_steps=999999
+		max_steps=100000
 	)
 	val_spec = tf.estimator.EvalSpec(
 		input_fn=val_input_fn,
@@ -368,27 +326,6 @@ def main(unused_argv):
 		train_spec,
 		val_spec
 	)
-
-	# predict the model and print results
-	predict_results = gender_classifier.predict(input_fn=create_img_fn)
-	total = 0
-	for predict_result in predict_results:
-		image = predict_result["original"]
-		image += 0.5
-		image *= 255
-		image = np.uint8(image)
-		image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-		cv2.imwrite("given" + str(total) + ".jpg", image)
-		image = predict_result["result"]
-		image += 0.5
-		image *= 255
-		image = np.uint8(image)
-		image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-		cv2.imwrite("test" + str(total) + ".jpg", image)
-
-		total += 1
-		if total > 9:
-			break
 
 	# Evaluate the model and print results
 	eval_results = gender_classifier.evaluate(input_fn=test_input_fn)
