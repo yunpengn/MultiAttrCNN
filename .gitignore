@@ -5,7 +5,7 @@ WIDER/
 LFW/
 
 # Training-specific folders
-model/
+model/age.pkl
 test/
 
 # IDE-specific folder
