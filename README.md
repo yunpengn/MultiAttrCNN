@@ -1,6 +1,6 @@
 # CS3244 Project
 
-This project is participating in NUS SoC 13th STePS. For more information, see [here](http://isteps.comp.nus.edu.sg/event/13th-steps/module/CS3244/project/2).
+This project is participating in NUS SoC 13th STePS. For more information, see [here](http://isteps.comp.nus.edu.sg/event/13th-steps/module/CS3244/project/2). A copy of the final report for this project can be found at [here](report.pdf).
 
 ## Notes regarding the WIDER dataset
 
