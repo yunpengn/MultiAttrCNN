@@ -1,4 +1,4 @@
-# CS3244 Project
+# Real-world Image Recognition for Multiple Human Attributes
 
 This project is participating in NUS SoC 13th STePS. For more information, see [here](http://isteps.comp.nus.edu.sg/event/13th-steps/module/CS3244/project/2).
 
