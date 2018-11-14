@@ -5,10 +5,10 @@ This project is participating in NUS SoC 13th STePS. For more information, see [
 Information about the repository structure:
 - [Project Report](report.pdf)
 - [Gender Classifier for the LFW dataset](torch/)
-    - Implemented using [PyTorch](https://pytorch.org) library.
-    - An older model can be found at [here](yunpeng_old/)
+    - Implemented using PyTorch (https://pytorch.org) library.
+    - An older model can be found at [here](yunpeng_old/).
 - [Long/short-sleeves Classifier for the WIDER dataset](henry/)
-    - Implemented using [TensorFlow](https://www.tensorflow.org) library.
+    - Implemented using TensorFlow (https://www.tensorflow.org) library.
 
 ## Notes regarding the WIDER dataset
 
